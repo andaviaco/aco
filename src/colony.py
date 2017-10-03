@@ -1,4 +1,5 @@
-cimport random as rand
+import random as rand
+import pprint as pp
 
 from ant import Ant
 from city import City
@@ -8,7 +9,7 @@ class Colony(object):
     """docstring for Colony"""
     def __init__(
         self,
-        nodes,
+        edges,
         initial_node,
         end_node,
         nants,
@@ -22,21 +23,27 @@ class Colony(object):
     ):
         super(Colony, self).__init__()
 
-        self.nodes = nodes
         self.initial_node = initial_node
         self.end_node = end_node
         self.nants = nants
         self.iterations = iterations
         self.evaporation_rate = evaporation_rate
-        self.initial_pheromone = initial_pheromone
         self.influence_pheromone = influence_pheromone
         self.influence_heuristic = influence_heuristic
         self.added_pheromone = added_pheromone
 
-    def initialize_cities(self):
-        pass
+        self.cities = self.initialize_cities(edges, initial_pheromone)
+        self.ants = self.initialize_ants(nants, initial_node)
 
-    def initial_ants(self):
+    def initialize_cities(self, edges, initial_pheromone):
+        keys = set(sum(edges, ())) # flat list and unique values
+
+        return {key: City(key, initial_pheromone) for key in keys}
+
+    def initialize_ants(self, nants, node):
+        return [Ant(i, node) for i in range(1, nants + 1)]
+
+    def reset_ants(self, ants):
         pass
 
     def optimize(self):
@@ -55,4 +62,10 @@ class Colony(object):
         pass
 
     def roulette_selection(self, fs):
-        pass
+        p = rd.uniform(0, sum(fs))
+
+        for i, f in enumerate(fs):
+            if p <= 0:
+                break
+            p -= f
+        return i
