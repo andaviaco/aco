@@ -44,26 +44,24 @@ class Colony(object):
 
     def optimize(self):
         for niteration in range(self.iterations):
-            for ant in self.ants:
-                ant.position = self.initial_node
-                ant.clear_tour()
-
-                while ant.position != self.end_node:
-                    posible_edges = self.get_possible_edges(ant.position, ant.last_position)
-
-                    probabilities = [self.get_probability(edge, posible_edges) for edge in posible_edges]
-                    selected_index = self.roulette_selection(probabilities)
-                    _, to_city = selected_edge = posible_edges[selected_index]
-                    ant.position = to_city
-                    ant.add_step(selected_edge)
-
-                print('Tour', ant.tour)
-            print('BEFORE')
-            pp.pprint(self.edges)
+            self.constructSolutions()
             self.update_pheromone()
-            print('AFTER')
-            pp.pprint(self.edges)
 
+    def constructSolutions(self):
+        for ant in self.ants:
+            ant.position = self.initial_node
+            ant.clear_tour()
+
+            while ant.position != self.end_node:
+                posible_edges = self.get_possible_edges(ant.position, ant.last_position)
+
+                probabilities = [self.get_probability(edge, posible_edges) for edge in posible_edges]
+                selected_index = self.roulette_selection(probabilities)
+                _, to_city = selected_edge = posible_edges[selected_index]
+                ant.position = to_city
+                ant.add_step(selected_edge)
+
+            print('Tour', ant.tour)
 
     def get_possible_edges(self, position, last_position):
         posibles = list(self.edges.keys())[:]
