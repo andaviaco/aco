@@ -23,6 +23,7 @@ class Colony(object):
     ):
         super(Colony, self).__init__()
 
+        self.edges = edges
         self.initial_node = initial_node
         self.end_node = end_node
         self.nants = nants
@@ -43,17 +44,28 @@ class Colony(object):
     def initialize_ants(self, nants, node):
         return [Ant(i, node) for i in range(1, nants + 1)]
 
-    def reset_ants(self, ants):
-        pass
-
     def optimize(self):
-        pass
+        for niteration in range(self.iterations):
+            for ant in self.ants:
+                ant.position = self.initial_node
+                ant.clear_tour()
+
+                while ant.position != self.end_node:
+                    posible_cities = self.get_possible_cities(ant.position, ant.last_position)
+                    pp.pprint(f'Current pos: {ant.position} - {posible_cities}')
+                    ant.position = posible_cities[rand.randint(0, 1)][1]
+
 
     def get_pheromone(self):
         pass
 
-    def get_possible_cities(self):
-        pass
+    def get_possible_cities(self, position, last_position):
+        posibles = list(self.edges.keys())[:]
+
+        try:
+            posibles.remove((position, last_position))
+        finally:
+            return [edge for edge in posibles if edge[0] == position]
 
     def get_tour_len(self):
         pass

@@ -1,5 +1,6 @@
 
 class Ant(object):
+    last_position = None
     tour = []
 
     """docstring for Ant"""
@@ -7,7 +8,16 @@ class Ant(object):
         super(Ant, self).__init__()
 
         self.name = name
-        self.position = initial_position
+        self.__position = initial_position
+
+    @property
+    def position(self):
+        return self.__position
+
+    @position.setter
+    def position(self, position):
+        self.last_position = self.__position
+        self.__position = position
 
     def add_step(self, step):
         self.tour.append(step)
