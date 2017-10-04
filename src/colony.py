@@ -53,9 +53,17 @@ class Colony(object):
 
                     probabilities = [self.get_probability(edge, posible_edges) for edge in posible_edges]
                     selected_index = self.roulette_selection(probabilities)
-                    pp.pprint(f'Current pos: {ant.position} [{selected_index}] - {posible_edges}')
-                    _, to_city = posible_edges[selected_index]
+                    _, to_city = selected_edge = posible_edges[selected_index]
                     ant.position = to_city
+                    ant.add_step(selected_edge)
+
+                print('Tour', ant.tour)
+            print('BEFORE')
+            pp.pprint(self.edges)
+            self.update_pheromone()
+            print('AFTER')
+            pp.pprint(self.edges)
+
 
     def get_possible_edges(self, position, last_position):
         posibles = list(self.edges.keys())[:]
@@ -77,14 +85,24 @@ class Colony(object):
 
         return pheromone / distance
 
-    def get_pheromone(self):
-        pass
+    def update_pheromone(self):
+        for edge_key, edge in self.edges.items():
+            edge.pheromone = self.get_pheromone(edge_key)
 
-    def get_pheromone_delta(self):
-        pass
+    def get_pheromone(self, edge):
+        ants_delta = sum([self.get_pheromone_delta(edge, ant) for ant in self.ants])
+        edge_pheromone = self.edges[edge].pheromone
 
-    def get_tour_len(self):
-        pass
+        return ((1 - self.evaporation_rate) * edge_pheromone) + ants_delta
+
+    def get_pheromone_delta(self, edge, ant):
+        if edge in ant.tour:
+            return self.added_pheromone / self.get_tour_len(ant)
+
+        return 0
+
+    def get_tour_len(self, ant):
+        return sum([self.edges[step].distance for step in ant.tour])
 
     def roulette_selection(self, fs):
         p = rand.uniform(0, sum(fs))
