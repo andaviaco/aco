@@ -2,7 +2,7 @@ import random as rand
 import pprint as pp
 
 from ant import Ant
-from city import City
+from edge import Edge
 
 
 class Colony(object):
@@ -33,13 +33,11 @@ class Colony(object):
         self.influence_heuristic = influence_heuristic
         self.added_pheromone = added_pheromone
 
-        self.cities = self.initialize_cities(edges, initial_pheromone)
+        self.edges = self.initialize_edges(edges, initial_pheromone)
         self.ants = self.initialize_ants(nants, initial_node)
 
-    def initialize_cities(self, edges, initial_pheromone):
-        keys = set(sum(edges, ())) # flat list and unique values
-
-        return {key: City(key, initial_pheromone) for key in keys}
+    def initialize_edges(self, edges, initial_pheromone):
+        return {key: Edge(key, d, initial_pheromone) for key, d in edges.items()}
 
     def initialize_ants(self, nants, node):
         return [Ant(i, node) for i in range(1, nants + 1)]
@@ -51,11 +49,11 @@ class Colony(object):
                 ant.clear_tour()
 
                 while ant.position != self.end_node:
-                    posible_cities = self.get_possible_cities(ant.position, ant.last_position)
-                    pp.pprint(f'Current pos: {ant.position} - {posible_cities}')
-                    ant.position = posible_cities[rand.randint(0, 1)][1]
+                    posible_edges = self.get_possible_edges(ant.position, ant.last_position)
+                    pp.pprint(f'Current pos: {ant.position} - {posible_edges}')
+                    ant.position = posible_edges[rand.randint(0, 1)][1]
 
-    def get_possible_cities(self, position, last_position):
+    def get_possible_edges(self, position, last_position):
         posibles = list(self.edges.keys())[:]
 
         try:
