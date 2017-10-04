@@ -55,10 +55,6 @@ class Colony(object):
                     pp.pprint(f'Current pos: {ant.position} - {posible_cities}')
                     ant.position = posible_cities[rand.randint(0, 1)][1]
 
-
-    def get_pheromone(self):
-        pass
-
     def get_possible_cities(self, position, last_position):
         posibles = list(self.edges.keys())[:]
 
@@ -66,6 +62,12 @@ class Colony(object):
             posibles.remove((position, last_position))
         finally:
             return [edge for edge in posibles if edge[0] == position]
+
+    def get_pheromone(self):
+        pass
+
+    def get_pheromone_delta(self):
+        pass
 
     def get_tour_len(self):
         pass
