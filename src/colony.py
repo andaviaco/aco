@@ -50,8 +50,12 @@ class Colony(object):
 
                 while ant.position != self.end_node:
                     posible_edges = self.get_possible_edges(ant.position, ant.last_position)
-                    pp.pprint(f'Current pos: {ant.position} - {posible_edges}')
-                    ant.position = posible_edges[rand.randint(0, 1)][1]
+
+                    probabilities = [self.get_probability(edge, posible_edges) for edge in posible_edges]
+                    selected_index = self.roulette_selection(probabilities)
+                    pp.pprint(f'Current pos: {ant.position} [{selected_index}] - {posible_edges}')
+                    _, to_city = posible_edges[selected_index]
+                    ant.position = to_city
 
     def get_possible_edges(self, position, last_position):
         posibles = list(self.edges.keys())[:]
@@ -60,6 +64,18 @@ class Colony(object):
             posibles.remove((position, last_position))
         finally:
             return [edge for edge in posibles if edge[0] == position]
+
+    def get_probability(self, edge, allowed_edges):
+        edges_sum = sum([self.edge_rel(aedge) for aedge in allowed_edges])
+        probability = self.edge_rel(edge) / edges_sum
+
+        return probability
+
+    def edge_rel(self, edge):
+        pheromone = self.edges[edge].pheromone ** self.influence_pheromone
+        distance = self.edges[edge].distance ** self.influence_heuristic
+
+        return pheromone / distance
 
     def get_pheromone(self):
         pass
@@ -70,14 +86,13 @@ class Colony(object):
     def get_tour_len(self):
         pass
 
-    def get_probability(self):
-        pass
-
     def roulette_selection(self, fs):
-        p = rd.uniform(0, sum(fs))
+        p = rand.uniform(0, sum(fs))
 
         for i, f in enumerate(fs):
+            p -= f
+
             if p <= 0:
                 break
-            p -= f
+
         return i
