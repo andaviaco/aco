@@ -1,6 +1,8 @@
 import random as rand
 import pprint as pp
 
+from operator import attrgetter
+
 from ant import Ant
 from edge import Edge
 
@@ -46,6 +48,8 @@ class Colony(object):
         for niteration in range(self.iterations):
             self.constructSolutions()
             self.update_pheromone()
+
+        return self.get_best_path()
 
     def constructSolutions(self):
         for ant in self.ants:
@@ -101,6 +105,24 @@ class Colony(object):
 
     def get_tour_len(self, ant):
         return sum([self.edges[step].distance for step in ant.tour])
+
+    def get_best_path(self):
+        position = self.initial_node
+        last_position = None
+        path = []
+
+        while position != self.end_node:
+            posible_edges = self.get_possible_edges(position,last_position)
+            edges_collection = [self.edges[edge] for edge in posible_edges]
+            top = max(edges_collection, key=attrgetter('pheromone'))
+
+            last_position = position
+            position = top.name[1]
+
+            path.append(top.name)
+
+        return path
+
 
     def roulette_selection(self, fs):
         p = rand.uniform(0, sum(fs))
