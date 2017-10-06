@@ -29,11 +29,12 @@ def main():
 
     initial_node = 1
     end_node = 4
-    ants = 4
+    ants = 5
     iterations = 10
 
     colony = Colony(edges, initial_node, end_node, ants, iterations)
-    colony.optimize()
+    best_path = colony.optimize()
+    print(f'Mejor Camino: {best_path}')
 
 if __name__ == '__main__':
     main()

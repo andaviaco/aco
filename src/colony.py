@@ -65,7 +65,7 @@ class Colony(object):
                 ant.position = to_city
                 ant.add_step(selected_edge)
 
-            print('Tour', ant.tour)
+            print('Tour', ant.tour, ant)
 
     def get_possible_edges(self, position, last_position):
         posibles = list(self.edges.keys())[:]
